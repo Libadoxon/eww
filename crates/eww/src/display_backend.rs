@@ -29,8 +29,8 @@ impl DisplayBackend for NoBackend {
 #[cfg(feature = "wayland")]
 mod platform_wayland {
     use crate::{widgets::window::Window, window_initiator::WindowInitiator};
-    use gtk::gdk;
     use gtk::prelude::*;
+    use gtk::{gdk, glib};
     use gtk_layer_shell::LayerShell;
     use yuck::config::{window_definition::WindowStacking, window_geometry::AnchorAlignment};
 
@@ -56,6 +56,21 @@ mod platform_wayland {
                 }
             };
             window.set_resizable(window_init.resizable);
+
+            if window_init.backend_options.wayland.popup {
+                window.connect_button_press_event(|w, _| {
+                    if !w.is_focus() {
+                        w.close();
+                    }
+                    glib::Propagation::Proceed
+                });
+                window.connect_key_press_event(|w, e| {
+                    if e.keyval() == gdk::keys::constants::Escape {
+                        w.close()
+                    }
+                    glib::Propagation::Proceed
+                });
+            }
 
             // Sets the layer where the layer shell surface will spawn
             match window_init.stacking {

@@ -54,6 +54,7 @@ impl BackendWindowOptionsDef {
         let wayland = WlBackendWindowOptionsDef {
             exclusive: attrs.ast_optional("exclusive")?,
             focusable: attrs.ast_optional("focusable")?,
+            popup: attrs.ast_optional("popup")?,
             namespace: attrs.ast_optional("namespace")?,
         };
 
@@ -110,6 +111,7 @@ impl X11BackendWindowOptionsDef {
 pub struct WlBackendWindowOptions {
     pub exclusive: bool,
     pub focusable: bool,
+    pub popup: bool,
     pub namespace: Option<String>,
 }
 
@@ -118,6 +120,7 @@ pub struct WlBackendWindowOptions {
 pub struct WlBackendWindowOptionsDef {
     pub exclusive: Option<SimplExpr>,
     pub focusable: Option<SimplExpr>,
+    pub popup: Option<SimplExpr>,
     pub namespace: Option<SimplExpr>,
 }
 
@@ -126,6 +129,7 @@ impl WlBackendWindowOptionsDef {
         Ok(WlBackendWindowOptions {
             exclusive: eval_opt_expr_as_bool(&self.exclusive, false, local_variables)?,
             focusable: eval_opt_expr_as_bool(&self.focusable, false, local_variables)?,
+            popup: eval_opt_expr_as_bool(&self.popup, false, local_variables)?,
             namespace: match &self.namespace {
                 Some(expr) => Some(expr.eval(local_variables)?.as_string()?),
                 None => None,
