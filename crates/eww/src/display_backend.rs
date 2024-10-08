@@ -59,7 +59,7 @@ mod platform_wayland {
 
             if window_init.backend_options.wayland.popup {
                 window.connect_button_press_event(|w, _| {
-                    if !w.is_focus() {
+                    if w.is_focus() {
                         w.close();
                     }
                     glib::Propagation::Proceed
